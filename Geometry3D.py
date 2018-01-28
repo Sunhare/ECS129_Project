@@ -11,8 +11,8 @@ class Point():
 		self.z = z #z_coordinate
 	#Used for when you're printing the object
 	def __str__(self):
-		# return ( "Point: (" + str(self.x) + ", " + str(self.y) + ", " + str(self.z) + ")" )
 		return ( "Point: (%.3f, %.3f, %.3f) " %(self.x, self.y, self.z)) 
+
 	#Overloading addition and subtraction to handle points
 	def __add__(self, rhs):
 		assert type(rhs) is Point, "You can only add points to points"
@@ -37,7 +37,6 @@ class Vector:
 		return length
 
 	def __str__(self):
-		# return ("Vector: <" + str(self.x) + ", " +str(self.y)+", "+str(self.z)+">")
 		return ( "Vector: <%.3f, %.3f, %.3f> " %(self.x, self.y, self.z)) 
 
 	def __add__(self, rhs):
@@ -95,28 +94,17 @@ class Triangle:
 		distance = None
 
 		if AB.dot(AC) <= 0:
-			distance = AB.length
+			distance = AB.length #B closer to point A but outside segment AC
 		elif BC.dot(AC) >= 0:
-			distance = BC.length
+			distance = BC.length #B closer to point C but outside segment AC
 		else:
-			distance =
+			distance = (AB.cross(AC).length / AC.length) #B within segment, so perpendicular distance is Area = base * height = 
+			#Magnitude of cross product divided by magnitude of base gives us perpendicular height to line
 
-		return False
-
-		# v = Vector(A, C)
-		# w = Vector(A, B)
-
-		# c1 = w.dot(v)
-		# if ( c1 <= 0 ):
-		# 	return w.length
-
-		# c2 = v.dot(v)
-		# if ( c2 <= c1 ):
-		# 	return Vector(C, B).length
-
-		# b = c1 / c2;
-		# Pb = Point(S.P0 + b * v)
-		# return d(P, Pb);
+		if distance <= self.threshold:
+			return True
+		else:
+			return False
 
 	def Flatten(self): #FIXME implment this function
 		#Need to move point B closer to the midpoint
@@ -220,8 +208,8 @@ if __name__ == "__main__":
 	C = Point(-4, -4, 0)
 
 
-	D = Point(4, -4, 0)
-	E = Point(0, 4, 0)
+	D = Point(0, 0, -1)
+	E = Point(0, 0, 1)
 
 	AB = Vector(A,B)
 	ABC = Plane(A,B,C)
