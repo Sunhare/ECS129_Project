@@ -1,6 +1,8 @@
 from math import sqrt
 import numpy as np
 
+
+
 class Point(): 
 	#Constructor, initialized to the zero vector if no input given
 	def __init__(self, x=0, y=0, z=0):
@@ -85,8 +87,36 @@ class Triangle:
 
 	def isFlat(self): #FIXME Implement this function
 		#Check if point B is less than self.threshold away
-		#from the line segment AC
+		# from the line segment AC
+		AB = Vector(self.A, self.B)
+		CB = Vector(self.C, self.B)
+		AC = Vector(self.A, self.B)
+
+		distance = None
+
+		if AB.dot(AC) <= 0:
+			distance = AB.length
+		elif BC.dot(AC) >= 0:
+			distance = BC.length
+		else:
+			distance =
+
 		return False
+
+		# v = Vector(A, C)
+		# w = Vector(A, B)
+
+		# c1 = w.dot(v)
+		# if ( c1 <= 0 ):
+		# 	return w.length
+
+		# c2 = v.dot(v)
+		# if ( c2 <= c1 ):
+		# 	return Vector(C, B).length
+
+		# b = c1 / c2;
+		# Pb = Point(S.P0 + b * v)
+		# return d(P, Pb);
 
 	def Flatten(self): #FIXME implment this function
 		#Need to move point B closer to the midpoint
@@ -136,12 +166,14 @@ class Line:
 	def __init__(self, A=Point(0,0,0), B=Point(0,0,0), t=1):
 		self.slope = Vector(A,B)
 		self.initial_point = A
+		self.end_point = B
 		self.t = t
 
 	def __str__(self):
 		return "Line: "+str(self.initial_point)+" + t"+str(self.slope)
 
 	#This property is used to find a point on the line given the t parameter
+
 	@property
 	def projected_point(self):
 		if self.t != None:

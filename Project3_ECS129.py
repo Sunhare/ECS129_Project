@@ -1,5 +1,15 @@
 from Geometry3D import *
 
+"""
+Things to check in the morning: 
+How to implement isFlat and Flatten
+Check your main loop and if you're thinking about it correctly
+	This includes seeing if the modulo while loop is a good idea
+	Look at the break cases for how to decide if there's a knot or not
+
+"""
+
+
 # file_name = input("Enter the name of the protein file including the handle: ")
 
 file_name = '5pti.txt' # Reads in the file with the amino acid sequence
