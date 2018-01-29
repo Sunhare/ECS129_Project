@@ -39,6 +39,9 @@ class Point():
 			return True
 		else:
 			return False
+	@property
+	def tuple_form(self):
+		return self.x, self.y, self.z
 
 
 
@@ -100,13 +103,13 @@ class Triangle:
 		self.C = C
 		self.B_prime = B
 
-		self.epsilon = 0.0001 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
-		self.threshold = 0.01 #FIXME Choose a threshold to check if the triangle is flat
+		self.epsilon = 0.01 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
+		self.threshold = 0.1 #FIXME Choose a threshold to check if the triangle is flat
 		
 	def __str__(self):
 			return ("Triangle:  A: " + str(self.A) + ", B: " + str(self.B) + ", C: " + str(self.C))
 
-	def isFlat(self):
+	def isFlat(self, toprint=False):
 		#Check if point B is less than self.threshold away
 		# from the line segment AC
 		AB = Vector(self.A, self.B)
@@ -123,12 +126,15 @@ class Triangle:
 			distance = (AB.cross(AC).length / AC.length) #B within segment, so perpendicular distance is Area = base * height = 
 			#Magnitude of cross product divided by magnitude of base gives us perpendicular height to line
 
+		if toprint == True:
+			print(str(AB),str(BC), str(AC))
+			print("Triangle distance to AC: " + str(distance))
 		if distance <= self.threshold:
 			return True
 		else:
 			return False
 
-	def Flatten(self): #FIXME implment this function
+	def Flatten(self):
 		#Need to move point B closer to the midpoint
 		#of line segment AC by self.epsilon
 		A_plus_C = Point(0,0,0)
@@ -199,6 +205,7 @@ class Line:
 			P = Point() #The calculatd point
 			D = self.initial_point
 
+			#Solving the parametric equation given a value for self.t
 			P.x = D.x + self.t*(self.slope.x)
 			P.y = D.y + self.t*(self.slope.y)
 			P.z = D.z + self.t*(self.slope.z)
@@ -215,7 +222,7 @@ class Line:
 		try:
 			self.t = ((-1*D)-(A*I.x)-(B*I.y)-(C*I.z)) / ((A*self.slope.x)+(B*self.slope.y)+(C*self.slope.z))
 		except ZeroDivisionError:
-			print("The line and the plane appear to be parallel, tried dividing by zero")
+			# print("The line and the plane appear to be parallel, tried dividing by zero")
 			# print(str(self)+",\n"+str(P))
 			self.t = None
 		return self.projected_point 
@@ -230,13 +237,32 @@ def Line_Segment_Intersecting_Triangle(ABC = Plane(), DE = Line()):
 		return False 
 
 
+#Checks if a triangle is blocked by a line segment
+def isBlocked(P = Plane(), L = Line()):
+	T = P.triangle #T = the triangle that defines the plane
+
+	ABpB = Plane(P.triangle.A, P.triangle.B_prime, P.triangle.B) 
+	#Actually a triangle but oh well, defined by A, B' and B
+
+	CBpB = Plane(P.triangle.C, P.triangle.B_prime, P.triangle.B) 
+	#Actually a triangle but oh well, defined by C, B' and B
+
+	left_intersected  =Line_Segment_Intersecting_Triangle(ABpB, L)
+	right_intersected =Line_Segment_Intersecting_Triangle(CBpB, L)
+
+	if not left_intersected and not right_intersected:
+		return False
+	else:
+		return True
+
+
 
 #Only executes if Geometry3D is run directly
 #Geometry3D Test
 if __name__ == "__main__":
 	A = Point(0, 4, 0)
-	B = Point(4, -4, 0)
-	C = Point(-4, -4, 0)
+	B = Point(-4, -4, 0)
+	C = Point(4, -4, 0)
 
 
 	D = Point(0, 0, -1)
@@ -254,6 +280,6 @@ if __name__ == "__main__":
 	print(ABC.triangle)
 
 	# print(DE) #Line test
-	# print(Line_Segment_Intersecting_Triangle(ABC, DE)) #Line Segment intersecting Triangle test
+	print(Line_Segment_Intersecting_Triangle(ABC, DE)) #Line Segment intersecting Triangle test
 
 

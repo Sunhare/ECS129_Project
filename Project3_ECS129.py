@@ -74,7 +74,7 @@ while True:
 			if left_triangle_intersected == True or right_triangle_intersected == True: #If something is blocking us
 				blocked = True
 				print("There was a block")
-				# print(str(ABC.triangle) + str(DE))
+				# print(str(ABC.triangle) +'\n'+ str(DE))
 				# break
 
 
