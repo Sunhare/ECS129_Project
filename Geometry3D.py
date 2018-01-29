@@ -17,9 +17,17 @@ class Point():
 	def __add__(self, rhs):
 		assert type(rhs) is Point, "You can only add points to points"
 		return (self.x+rhs.x), (self.y + rhs.y), (self.z + rhs.z)
+
 	def __sub__(self, rhs):
 		assert type(rhs) is Point, "You can only subtract points from points"
 		return (self.x-rhs.x), (self.y - rhs.y), (self.z - rhs.z)
+
+	def __mul__(self, rhs):
+		return (self.x*rhs), (self.y*rhs), (self.z*rhs)
+	def __truediv__(self, rhs):
+		return (self.x/rhs), (self.y/rhs), (self.z/rhs)
+
+
 
 
 class Vector:
@@ -77,18 +85,19 @@ class Triangle:
 		self.A = A
 		self.B = B
 		self.C = C
+		self.B_prime = B
 
-		self.epsilon = 0.003141592657 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
+		self.epsilon = 0.5 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
 		self.threshold = 0.02 #FIXME Choose a threshold to check if the triangle is flat
 		
 	def __str__(self):
 			return ("Triangle:  A: " + str(self.A) + ", B: " + str(self.B) + ", C: " + str(self.C))
 
-	def isFlat(self): #FIXME Implement this function
+	def isFlat(self):
 		#Check if point B is less than self.threshold away
 		# from the line segment AC
 		AB = Vector(self.A, self.B)
-		CB = Vector(self.C, self.B)
+		BC = Vector(self.B, self.C)
 		AC = Vector(self.A, self.B)
 
 		distance = None
@@ -109,7 +118,17 @@ class Triangle:
 	def Flatten(self): #FIXME implment this function
 		#Need to move point B closer to the midpoint
 		#of line segment AC by self.epsilon
-		pass
+		A_plus_C = Point(0,0,0)
+		(A_plus_C.x, A_plus_C.y, A_plus_C.z) = self.A+ self.C
+
+		midpoint = Point(0,0,0)
+		(midpoint.x, midpoint.y, midpoint.z) = A_plus_C/2
+
+		span = Line(self.B, midpoint) #The line going from B to the midpoint
+		span.t = self.epsilon
+		self.B_prime = span.projected_point
+
+		# self.B = B_prime
 
 	#Check if a point P is inside the triangle
 	def is_in_triangle(self, P = Point(0,0,0)):
@@ -161,7 +180,6 @@ class Line:
 		return "Line: "+str(self.initial_point)+" + t"+str(self.slope)
 
 	#This property is used to find a point on the line given the t parameter
-
 	@property
 	def projected_point(self):
 		if self.t != None:
@@ -215,11 +233,14 @@ if __name__ == "__main__":
 	ABC = Plane(A,B,C)
 	DE = Line(D,E)
 
-	print(A) #Point test
-	print(AB) #Vector test
-	print(ABC) #Plane test
+	# print(A) #Point test
+	# print(AB) #Vector test
+	# print(ABC) #Plane test
 	print(ABC.triangle) #Triangle test
-	print(DE) #Line test
-	print(Line_Segment_Intersecting_Triangle(ABC, DE)) #Line Segment intersecting Triangle test
+	ABC.triangle.Flatten()
+	print(ABC.triangle)
+
+	# print(DE) #Line test
+	# print(Line_Segment_Intersecting_Triangle(ABC, DE)) #Line Segment intersecting Triangle test
 
 

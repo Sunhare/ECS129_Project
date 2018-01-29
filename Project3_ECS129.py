@@ -29,13 +29,14 @@ for amino_acid in protein:
 
 K_move = 0
 K_like_to_move = 0
-#Main Loop
 
 iteration_period = len(amino_acids)-2
-knot = False
-blocked = False
 counter = 0
 
+knot = False
+blocked = False
+
+#Main Loop
 while True:
 	i = counter%iteration_period #This is a periodic function going from 0 to a maximum of iteration period -1
 
@@ -50,25 +51,34 @@ while True:
 	ABC = Plane(AA1, AA2, AA3)
 
 	#Check the entire protein to ensure there's no line blocking us
+	ABC.triangle.Flatten() 
+
 	for j in range(0, len(amino_acids)-1):
 		D = Point(amino_acids[j][0], amino_acids[j][1], amino_acids[j][2])
 		E = Point(amino_acids[j+1][0], amino_acids[j+1][1], amino_acids[j+1][2])
 
 		DE = Line(D,E)
 
-		if Line_Segment_Intersecting_Triangle(ABC, DE) == True: #If nothing is blocking us
+		#FIXME Make this a triangle
+		ABpB = Plane(AA1, ABC.triangle.B_prime, AA2)
+		CBpB = Plane(AA3, ABC.triangle.B_prime, AA2)
+
+		left_triangle_intersected = Line_Segment_Intersecting_Triangle(ABpB, DE) #FIXME
+		right_triangle_intersected = Line_Segment_Intersecting_Triangle(CBpB, DE)
+
+		if left_triangle_intersected == True or right_triangle_intersected == True: #If something is blocking us
 			blocked = True
 			print("There was a block")
-			print(str(ABC.triangle) + str(DE))
+			# print(str(ABC.triangle) + str(DE))
 			break
 
 
 	#If you're not blocked, and the triangle isn't flat, flatten the triangle
 	if not blocked and not ABC.triangle.isFlat(): 
-		ABC.triangle.Flatten() #FIXME: Implement this function
-		amino_acids[i+1][0] = ABC.triangle.B.x
-		amino_acids[i+1][1] = ABC.triangle.B.y
-		amino_acids[i+1][2] = ABC.triangle.B.z
+		
+		amino_acids[i+1][0] = ABC.triangle.B_prime.x
+		amino_acids[i+1][1] = ABC.triangle.B_prime.y
+		amino_acids[i+1][2] = ABC.triangle.B_prime.z
 
 		K_move += 1
 
