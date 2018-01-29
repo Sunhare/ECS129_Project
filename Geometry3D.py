@@ -27,6 +27,19 @@ class Point():
 	def __truediv__(self, rhs):
 		return (self.x/rhs), (self.y/rhs), (self.z/rhs)
 
+	def __eq__(self, rhs):
+		assert type(rhs) is Point, "You can only compare points"
+		if (self.x == rhs.x) and (self.y == rhs.y) and (self.z == rhs.z):
+			return True
+		else:
+			return False
+
+	def __ne__(self, rhs):
+		if (self.x != rhs.x) or (self.y != rhs.y) or (self.z != rhs.z):
+			return True
+		else:
+			return False
+
 
 
 
@@ -87,8 +100,8 @@ class Triangle:
 		self.C = C
 		self.B_prime = B
 
-		self.epsilon = 0.5 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
-		self.threshold = 0.02 #FIXME Choose a threshold to check if the triangle is flat
+		self.epsilon = 0.0001 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
+		self.threshold = 0.01 #FIXME Choose a threshold to check if the triangle is flat
 		
 	def __str__(self):
 			return ("Triangle:  A: " + str(self.A) + ", B: " + str(self.B) + ", C: " + str(self.C))

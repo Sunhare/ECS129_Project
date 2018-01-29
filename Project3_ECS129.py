@@ -36,10 +36,12 @@ counter = 0
 knot = False
 blocked = False
 
+first_loop = True
+
 #Main Loop
 while True:
 	i = counter%iteration_period #This is a periodic function going from 0 to a maximum of iteration period -1
-
+	print("I: " +str(i))
 	#Make the amino acids into points 3 at a time
 	AA1 = Point(amino_acids[i][0], amino_acids[i][1], amino_acids[i][2])
 	AA2 = Point(amino_acids[i+1][0], amino_acids[i+1][1], amino_acids[i+1][2])
@@ -57,20 +59,22 @@ while True:
 		D = Point(amino_acids[j][0], amino_acids[j][1], amino_acids[j][2])
 		E = Point(amino_acids[j+1][0], amino_acids[j+1][1], amino_acids[j+1][2])
 
-		DE = Line(D,E)
+		if (D != A or D != B) or (E != A or E != B): #Making sure you're not using the same line segments
+		#as the triangle
 
-		#FIXME Make this a triangle
-		ABpB = Plane(AA1, ABC.triangle.B_prime, AA2)
-		CBpB = Plane(AA3, ABC.triangle.B_prime, AA2)
+			DE = Line(D,E)
+			#FIXME Make this a triangle
+			ABpB = Plane(AA1, ABC.triangle.B_prime, AA2)
+			CBpB = Plane(AA3, ABC.triangle.B_prime, AA2)
 
-		left_triangle_intersected = Line_Segment_Intersecting_Triangle(ABpB, DE) #FIXME
-		right_triangle_intersected = Line_Segment_Intersecting_Triangle(CBpB, DE)
+			left_triangle_intersected = Line_Segment_Intersecting_Triangle(ABpB, DE) #FIXME
+			right_triangle_intersected = Line_Segment_Intersecting_Triangle(CBpB, DE)
 
-		if left_triangle_intersected == True or right_triangle_intersected == True: #If something is blocking us
-			blocked = True
-			print("There was a block")
-			# print(str(ABC.triangle) + str(DE))
-			break
+			if left_triangle_intersected == True or right_triangle_intersected == True: #If something is blocking us
+				blocked = True
+				print("There was a block")
+				# print(str(ABC.triangle) + str(DE))
+				# break
 
 
 	#If you're not blocked, and the triangle isn't flat, flatten the triangle
@@ -88,6 +92,7 @@ while True:
 
 	#After one full iteration, if you haven't made any moves
 	if i == 0 :
+		
 		if K_move == 0 and K_like_to_move == 0:
 			knot = False
 			break
@@ -95,9 +100,11 @@ while True:
 			knot = True
 			break
 
-		K_move = 0
-		K_like_to_move = 0
-		blocked = False
+		if first_loop == True:
+			K_move = 0
+			K_like_to_move = 0
+			blocked = False
+			first_loop = False
 
 	counter += 1
 
