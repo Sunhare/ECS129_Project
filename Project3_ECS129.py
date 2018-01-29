@@ -42,6 +42,7 @@ first_loop = True
 while True:
 	i = counter%iteration_period #This is a periodic function going from 0 to a maximum of iteration period -1
 	print("I: " +str(i))
+
 	#Make the amino acids into points 3 at a time
 	AA1 = Point(amino_acids[i][0], amino_acids[i][1], amino_acids[i][2])
 	AA2 = Point(amino_acids[i+1][0], amino_acids[i+1][1], amino_acids[i+1][2])
@@ -59,7 +60,7 @@ while True:
 		D = Point(amino_acids[j][0], amino_acids[j][1], amino_acids[j][2])
 		E = Point(amino_acids[j+1][0], amino_acids[j+1][1], amino_acids[j+1][2])
 
-		if (D != A or D != B) or (E != A or E != B): #Making sure you're not using the same line segments
+		if (D != AA1 or D != AA2) or (E != AA1 or E != AA2): #Making sure you're not using the same line segments
 		#as the triangle
 
 			DE = Line(D,E)
