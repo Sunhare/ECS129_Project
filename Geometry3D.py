@@ -126,9 +126,9 @@ class Triangle:
 			distance = (AB.cross(AC).length / AC.length) #B within segment, so perpendicular distance is Area = base * height = 
 			#Magnitude of cross product divided by magnitude of base gives us perpendicular height to line
 
-		if toprint == True:
-			print(str(AB),str(BC), str(AC))
-			print("Triangle distance to AC: " + str(distance))
+		# if toprint == True:
+			# print(str(AB),str(BC), str(AC))
+			# print("Triangle distance to AC: " + str(distance))
 		if distance <= self.threshold:
 			return True
 		else:

@@ -9,10 +9,13 @@ and why some triangles have two repeated points
 
 """
 
+#Open the amino acid sequences
 protein_file = open('5pti.txt', 'r')
 
+#Declare an empty list to store the amino acids along with their coordinates
 AA_array = list()
 
+#Used to map the strings of amino acids into floats that python can use for calculations
 for amino_acid_coord in protein_file:
 	AA = list(map(float, amino_acid_coord.split()))
 	AA_array.append(AA)
@@ -22,17 +25,20 @@ for amino_acid_coord in protein_file:
 # 	print(coord)
 
 
+#The number of triangles we need to create to loop through,
+#the last triangle is the index 2 away from the length of amino acids we have
 num_triangles = len(AA_array)-2
 
-something_to_do = True
 
+something_to_do = True #Used to terminate the algorithmn
 knot_present = None #Initializing if there's a knot present to None
 
-K_move = 0
-K_like_to_move = 0
+K_move = 0 #Whenever we make a move, recorded here
+K_like_to_move = 0 #Whenever we could make a move but don't because we're blocked, recorded here
 
 num_iters = 0
 flat_counter = 0
+
 while something_to_do:
 	for i in range(num_triangles):
 		# print(i)
