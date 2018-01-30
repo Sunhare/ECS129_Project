@@ -41,7 +41,7 @@ class Point():
 			return False
 	@property
 	def tuple_form(self):
-		return self.x, self.y, self.z
+		return (self.x, self.y, self.z)
 
 
 
@@ -101,20 +101,22 @@ class Triangle:
 		self.A = A
 		self.B = B
 		self.C = C
-		self.B_prime = B
+		self.B_prime = self.B
 
-		self.epsilon = 0.01 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
-		self.threshold = 0.1 #FIXME Choose a threshold to check if the triangle is flat
+		self.epsilon = 0.9 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
+		self.threshold = 2 #FIXME Choose a threshold to check if the triangle is flat
 		
 	def __str__(self):
 			return ("Triangle:  A: " + str(self.A) + ", B: " + str(self.B) + ", C: " + str(self.C))
 
-	def isFlat(self, toprint=False):
+
+
+	def isFlat(self):
 		#Check if point B is less than self.threshold away
 		# from the line segment AC
 		AB = Vector(self.A, self.B)
 		BC = Vector(self.B, self.C)
-		AC = Vector(self.A, self.B)
+		AC = Vector(self.A, self.C)
 
 		distance = None
 
@@ -126,28 +128,32 @@ class Triangle:
 			distance = (AB.cross(AC).length / AC.length) #B within segment, so perpendicular distance is Area = base * height = 
 			#Magnitude of cross product divided by magnitude of base gives us perpendicular height to line
 
-		# if toprint == True:
-			# print(str(AB),str(BC), str(AC))
-			# print("Triangle distance to AC: " + str(distance))
+		self.squish = distance
 		if distance <= self.threshold:
+			# print("Distance: " + str(distance))
+			# print("AB: " + str(AB))
+			# print("BC: " + str(BC))
+			# print("AC: " + str(AC))
+			# print(self)
 			return True
 		else:
 			return False
 
-	def Flatten(self):
+
+	def tryFlatten(self): #FIXME
 		#Need to move point B closer to the midpoint
 		#of line segment AC by self.epsilon
-		A_plus_C = Point(0,0,0)
+		A_plus_C = Point(0,0,0) #Intialized to zero point
 		(A_plus_C.x, A_plus_C.y, A_plus_C.z) = self.A+ self.C
 
-		midpoint = Point(0,0,0)
+		midpoint = Point(0,0,0) #Intialize to zero point
 		(midpoint.x, midpoint.y, midpoint.z) = A_plus_C/2
 
 		span = Line(self.B, midpoint) #The line going from B to the midpoint
 		span.t = self.epsilon
 		self.B_prime = span.projected_point
 
-		# self.B = B_prime
+		# self.B = self.B_prime #Debugging, for testing Geometry3D at bottom of code
 
 	#Check if a point P is inside the triangle
 	def is_in_triangle(self, P = Point(0,0,0)):
@@ -222,8 +228,6 @@ class Line:
 		try:
 			self.t = ((-1*D)-(A*I.x)-(B*I.y)-(C*I.z)) / ((A*self.slope.x)+(B*self.slope.y)+(C*self.slope.z))
 		except ZeroDivisionError:
-			# print("The line and the plane appear to be parallel, tried dividing by zero")
-			# print(str(self)+",\n"+str(P))
 			self.t = None
 		return self.projected_point 
 
@@ -251,9 +255,9 @@ def isBlocked(P = Plane(), L = Line()):
 	right_intersected =Line_Segment_Intersecting_Triangle(CBpB, L)
 
 	if not left_intersected and not right_intersected:
-		return False
+		return False #isBlocked = False
 	else:
-		return True
+		return True #isBlocked = True
 
 
 
@@ -276,7 +280,7 @@ if __name__ == "__main__":
 	# print(AB) #Vector test
 	# print(ABC) #Plane test
 	print(ABC.triangle) #Triangle test
-	ABC.triangle.Flatten()
+	ABC.triangle.tryFlatten()
 	print(ABC.triangle)
 
 	# print(DE) #Line test
