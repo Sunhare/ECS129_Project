@@ -1,4 +1,4 @@
-from Geometry3D_Rewrite import *
+from Geometry3D import *
 
 #Open the amino acid sequences
 protein_file = open('5pti_folded_0.txt', 'r')
