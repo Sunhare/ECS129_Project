@@ -1,15 +1,6 @@
+#Geometry3D.py
 from math import sqrt
 import numpy as np
-
-"""
-Look into:
-isFlat
-contains_point
-look into floating point arithmetic
-
-"""
-
-
 
 class Point(): 
 	#Constructor, initialized to the zero vector if no input given
@@ -24,11 +15,9 @@ class Point():
 
 	#Overloading addition and subtraction to handle points
 	def __add__(self, rhs):
-		# assert type(rhs) is Point, "You can only add points to points"
 		return Point((self.x+rhs.x), (self.y + rhs.y), (self.z + rhs.z))
 
 	def __sub__(self, rhs):
-		# assert type(rhs) is Point, "You can only subtract points from points"
 		return Point((self.x-rhs.x), (self.y - rhs.y), (self.z - rhs.z))
 
 	def __mul__(self, rhs):
@@ -38,14 +27,12 @@ class Point():
 		return Point((self.x/rhs), (self.y/rhs), (self.z/rhs))
 
 	def __eq__(self, rhs):
-		# assert type(rhs) is Point, "You can only compare points"
 		if (self.x == rhs.x) and (self.y == rhs.y) and (self.z == rhs.z):
 			return True
 		else:
 			return False
 
 	def __ne__(self, rhs):
-		# assert type(rhs) is Point, "You can only compare points"
 		if (self.x != rhs.x) or (self.y != rhs.y) or (self.z != rhs.z):
 			return True
 		else:
@@ -77,11 +64,9 @@ class Vector:
 		return ( "Vector: <%.3f, %.3f, %.3f> " %(self.x, self.y, self.z)) 
 
 	def __add__(self, rhs):
-		# assert type(rhs) is Vector, "You can only add vectors to vectors"
 		return Vector(Point(0,0,0), Point((self.x+rhs.x), (self.y + rhs.y), (self.z + rhs.z)))
 
 	def __sub__(self, rhs):
-		# assert type(rhs) is Vector, "You can only subtract vectors from vectors"
 		return Vector(Point(0,0,0), Point((self.x-rhs.x), (self.y - rhs.y), (self.z - rhs.z)))
 
 	def __mul__(self,scalar):
@@ -92,14 +77,12 @@ class Vector:
 		return Vector(Point(), Point((self.x/rhs), (self.y/rhs), (self.z/rhs)))
 
 	def __eq__(self, rhs):
-		assert type(rhs) is Vector, "You can only compare vectors"
 		if (self.x == rhs.x) and (self.y == rhs.y) and (self.z == rhs.z):
 			return True
 		else:
 			return False
 
 	def __ne__(self, rhs):
-		assert type(rhs) is Vector, "You can only compare vectors"
 		if (self.x != rhs.x) or (self.y != rhs.y) or (self.z != rhs.z):
 			return True
 		else:
@@ -132,7 +115,7 @@ class Plane:
 	def __init__(self, A=Point(0,0,0), B=Point(0,0,0), C=Point(0,0,0)):
 		AB = Vector(A,B)
 		AC = Vector(A,C)
-		N = (AB.cross(AC))
+		N = AB.cross(AC)
 		N.normalize()
 
 		self.a = N.x
@@ -172,16 +155,9 @@ class Line:
 			return P
 
 	def plane_intersection(self, P = Plane()):
-		# A = P.a
-		# B = P.b
-		# C = P.c
-		# D = P.d
-		# I = self.initial_point
-
 		#Solving for the point where the line intersects the plane
 		try:
 			self.t = ((-1*P.d)-(P.a*self.initial_point.x)-(P.b*self.initial_point.y)-(P.c*self.initial_point.z)) / ((P.a*self.direction.x)+(P.b*self.direction.y)+(P.c*self.direction.z))
-			# self.t = ((-1*D)-(A*I.x)-(B*I.y)-(C*I.z)) / ((A*self.direction.x)+(B*self.direction.y)+(C*self.direction.z))
 		except ZeroDivisionError:
 			self.t = None
 		return self.projected_point 
@@ -195,7 +171,7 @@ class Triangle:
 
 		self.plane = Plane(A, B, C) #Plane created by the triangle
 
-		self.epsilon = 0.01#FIXME Chooose an arbitrary epsilon to move flatten the triangle
+		self.epsilon = 0.01 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
 		self.threshold = 0.01 #FIXME Choose a threshold to check if the triangle is flat
 		
 
@@ -218,58 +194,37 @@ class Triangle:
 		else:
 			distance = (AB.cross(AC).length / AC.length) #B within segment, so perpendicular distance is Area = base * height = 
 			#Magnitude of cross product divided by magnitude of base gives us perpendicular height to line
-
-		#Trying something new
-		# M = (self.A + self.C) / 2
-		# BM = Vector(self.B, M)
-		# distance = BM.length
-
 		return distance
 
 	def isFlat(self):
 		#Check if point B is less than self.threshold away from the line segment AC
-		# print(self.distance)
 		if self.distance <= self.threshold:
 			return True
 		else:
 			return False
 
-	def tryFlatten(self): #FIXME
-		#Need to move point B closer to AC by self.epsilon
+	def tryFlatten(self): 
 
 		#Midpoint Method
-		P = (self.A+ self.C)/2 #Midpoint
-		BP = Vector(self.B, P)
-		BP.normalize() #Makes length of BP == 1
-		BP *= self.epsilon
-		self.B_prime = self.B + BP #Move B in the direction of BP
+		# P = (self.A+ self.C)/2 #Midpoint
+		# BP = Vector(self.B, P)
+		# BP.normalize() #Makes length of BP == 1
+		# BP *= self.epsilon
+		# self.B_prime = self.B + BP #Move B in the direction of BP
 
-		#Direct Method
-		# AB = Vector(self.A,self.B)
-		# AC = Vector(self.A,self.C)
-		# AC.normalize()
-		# scalar = AB.dot(AC)
-		# A1 = AC*scalar
-
-		# A2 = (A1 - AB)*self.epsilon
-
-		# self.B_prime = self.B + A2
-		# print(self.B_prime)
-
-
-
+		#Actual Method Used in Original Journal
+		self.B_prime = (self.A+self.B+self.C)/3
 
 	#Uses Barycentric Coordinate Method
-	#Uses A as origin, then uses AB and AC as a basis for any point within the triangle
-	#Alpha and Beta are the coefficients of the basis for any given point
-	#If Alpha and Beta are both greater than 0, and both sum less than 1 then a given point is within the triangle
+	#A is the origin; AB and AC are a basis for any point within the triangle
+	#alpha and beta are the coefficients of the basis vectors
 	def contains_point(self, P = Point(0,0,0)):
-		# P = A + alpha * AC + beta * AB       // Original equation, Point P = Point A + coefficient*basis1 + coefficient*basis2
-		# AP = alpha*AC + beta*AB    	 		// Subtract A from both sides
+		# P = A + alpha * AC + beta * AB 	# Original equation
+		# AP = alpha*AC + beta*AB 			# Subtract A from both sides
 
+		#Take the dot product with both basis vectors to generate 2 equations to solve our system
 		# (AP) . AC = (alpha * AC + beta * AB) . AC		
 		# (AP) . AB = (alpha * AC + beta * AB) . AB 	
-		#Take the dot product with both basis vectors to generate 2 equations to solve our system	
 
 		AP = Vector(self.A, P)
 		AB = Vector(self.A, self.B)
@@ -280,21 +235,20 @@ class Triangle:
 		beta = (((AC.dot(AC))*(AP.dot(AB))-(AC.dot(AB))*(AP.dot(AC)))) / (((AC.dot(AC))*(AB.dot(AB)) - (AC.dot(AB))*(AB.dot(AC))))
 
 		if (alpha > 0 and beta > 0 and (alpha + beta) < 1):
-			# print("Alpha: " + str(alpha) + " Beta: " + str(beta))
 			return True
 		else:
 			return False
 
-
+	#Important function
 	def intersected_by_line_segment(self, DE = Line()):
 		P = DE.plane_intersection(self.plane) #See where the line spanned by DE intersects the plane made by ABC
-		if DE.t != None and DE.t < 1 and DE.t > 0: #If the intersection is within the line segment and the lines aren't parallel
+		if (DE.t != None) and (DE.t < 1.0 and DE.t > 0.0): #If the lines aren't parallel and the intersection is within the line segment 
 			return self.contains_point(P) #Return whether or not the intersection is within the triangle
 		else: #If the intersection is not within the line segment, return false
 			return False 
 
 
-# from mayavi import points3d
+#Used to debug Geometry3D
 if __name__ == "__main__":
 	
 
@@ -360,19 +314,19 @@ if __name__ == "__main__":
 	B = Point(1.5,1,0)
 	C = Point(2,0,0)
 
-	# ABC = Triangle(A,B,C)
-	# print(ABC)
+	ABC = Triangle(A,B,C)
+	print(ABC)
 
-	# ABC.tryFlatten()
+	ABC.tryFlatten()
 
-	# L = Point(0.5,0,1)
-	# S = Point(2,1,-1)
+	L = Point(0.5,0,1)
+	S = Point(2,1,-1)
 
-	# LS = Line(L,S)
-	# print(LS)
-	# ABC = Triangle(A,B,C)
+	LS = Line(L,S)
+	print(LS)
+	ABC = Triangle(A,B,C)
 
-	# print(ABC.intersected_by_line_segment(LS))
+	print(ABC.intersected_by_line_segment(LS))
 
 
 
