@@ -1,7 +1,17 @@
 from Geometry3D import *
 
+"""Look into MatPlotLib"""
+
+
+
+
 #Open the amino acid sequences
-protein_file = open('5pti_folded_0.txt', 'r')
+# timA = '1timA_original.txt'
+# pti = '5pti_original.txt'
+
+protein_name = input('Enter the name of the protein: ')
+
+protein_file = open(protein_name+'_original.txt', 'r')
 
 #Declare an empty list to store the amino acids along with their coordinates
 AA_array = list()
@@ -27,7 +37,7 @@ num_iters = 0
 flat_counter = 0
 
 while something_to_do:
-# for index in range(2): #Debugging, Data Visualization
+# for index in range(1): #Debugging, Data Visualization
 	for i in range(num_triangles):
 		blocked = False #Assume not blocked for every triangle
 
@@ -65,12 +75,14 @@ while something_to_do:
 				#If we encounter a block, exit the for loop
 				#FIXME: Currently doesn't work, look into how the triangles are flattened
 				if ABpB.intersected_by_line_segment(DE) or CBpB.intersected_by_line_segment(DE):
+					# print("Intersection Found")
 					# print("ABpB intersected by DE: " + str(ABpB.intersected_by_line_segment(DE)))
 					# print(ABpB)
-					# print(DE)
 					# print("CBpB intersected by DE: " + str(CBpB.intersected_by_line_segment(DE)))
 					# print(CBpB)
 					# print(DE)
+					# print()
+					
 					blocked = True
 					K_like_to_move += 1
 					break
@@ -92,16 +104,24 @@ while something_to_do:
 	print("Num Iters: " + str(num_iters) + " K_move " + str(K_move) +" K_like_to_move " + str(K_like_to_move) +" Flat Counter " + str(flat_counter) ) # Debugging 
 
 
-	#Data Visualization
+	# #Debugging
+	# if(K_like_to_move > 0):
+	# 	something_to_do = False
+	# 	myfile_name = '5pti_folded_'+str(num_iters)+'.txt'
+	# 	test_file = open(myfile_name, 'w')
+	# 	for item in AA_array:
+	# 		test_file.write("%f\t%f\t%f\n" %(item[0], item[1], item[2]))
+	# 	test_file.close()
+
+	# Data Visualization
 	if K_move == 0:
-		myfile_name = '5pti_folded_'+str(num_iters)+'.txt'
+		myfile_name = str(protein_name)+'_folded_'+str(num_iters)+'.txt'
 		test_file = open(myfile_name, 'w')
 		for item in AA_array:
 			test_file.write("%f\t%f\t%f\n" %(item[0], item[1], item[2]))
 		test_file.close()
 
-	# something_to_do = False #Debugging
-
+	#Program Termination
 	if(K_move == 0):
 		something_to_do = False
 

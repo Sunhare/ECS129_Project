@@ -1,6 +1,15 @@
 from math import sqrt
 import numpy as np
 
+"""
+Look into:
+isFlat
+contains_point
+look into floating point arithmetic
+
+"""
+
+
 
 class Point(): 
 	#Constructor, initialized to the zero vector if no input given
@@ -11,7 +20,7 @@ class Point():
 
 	#Used for when you're printing the object
 	def __str__(self):
-		return ( "Point: (%.3f, %.3f, %.3f)" %(self.x, self.y, self.z)) 
+		return ( "%.3f %.3f %.3f\n" %(self.x, self.y, self.z)) 
 
 	#Overloading addition and subtraction to handle points
 	def __add__(self, rhs):
@@ -144,13 +153,16 @@ class Line:
 		self.t = t
 
 	def __str__(self):
-		return "Line: "+str(self.initial_point)+" + t"+str(self.direction)
+		x_comp = str(self.initial_point.x)+' + '+str(self.direction.x) + 't' + '\n'
+		y_comp = str(self.initial_point.y)+' + '+ str(self.direction.y) + 't' + '\n'
+		z_comp = str(self.initial_point.z)+' + '+str(self.direction.z) + 't' + '\n'
+		return "Line:\n" + x_comp + y_comp + z_comp
 
 	#This property is used to find a point on the line given the t parameter
 	@property
 	def projected_point(self):
 		if self.t != None:
-			P = Point() #The calculatd point
+			P = Point() #The calculated point
 			D = self.initial_point
 
 			#Solving the parametric equation given a value for self.t
@@ -160,15 +172,16 @@ class Line:
 			return P
 
 	def plane_intersection(self, P = Plane()):
-		A = P.a
-		B = P.b
-		C = P.c
-		D = P.d
-		I = self.initial_point
+		# A = P.a
+		# B = P.b
+		# C = P.c
+		# D = P.d
+		# I = self.initial_point
 
 		#Solving for the point where the line intersects the plane
 		try:
-			self.t = ((-1*D)-(A*I.x)-(B*I.y)-(C*I.z)) / ((A*self.direction.x)+(B*self.direction.y)+(C*self.direction.z))
+			self.t = ((-1*P.d)-(P.a*self.initial_point.x)-(P.b*self.initial_point.y)-(P.c*self.initial_point.z)) / ((P.a*self.direction.x)+(P.b*self.direction.y)+(P.c*self.direction.z))
+			# self.t = ((-1*D)-(A*I.x)-(B*I.y)-(C*I.z)) / ((A*self.direction.x)+(B*self.direction.y)+(C*self.direction.z))
 		except ZeroDivisionError:
 			self.t = None
 		return self.projected_point 
@@ -182,12 +195,12 @@ class Triangle:
 
 		self.plane = Plane(A, B, C) #Plane created by the triangle
 
-		self.epsilon = 0.1#FIXME Chooose an arbitrary epsilon to move flatten the triangle
-		self.threshold = 0.1 #FIXME Choose a threshold to check if the triangle is flat
+		self.epsilon = 0.01#FIXME Chooose an arbitrary epsilon to move flatten the triangle
+		self.threshold = 0.01 #FIXME Choose a threshold to check if the triangle is flat
 		
 
 	def __str__(self):
-		return ("Triangle: " + str(self.A) + ", " + str(self.B) + ", " + str(self.C))
+		return ("Triangle:\n" + str(self.A)+ str(self.B)+str(self.C))
 
 
 	@property
@@ -205,10 +218,17 @@ class Triangle:
 		else:
 			distance = (AB.cross(AC).length / AC.length) #B within segment, so perpendicular distance is Area = base * height = 
 			#Magnitude of cross product divided by magnitude of base gives us perpendicular height to line
+
+		#Trying something new
+		# M = (self.A + self.C) / 2
+		# BM = Vector(self.B, M)
+		# distance = BM.length
+
 		return distance
 
 	def isFlat(self):
 		#Check if point B is less than self.threshold away from the line segment AC
+		# print(self.distance)
 		if self.distance <= self.threshold:
 			return True
 		else:
@@ -220,35 +240,50 @@ class Triangle:
 		#Midpoint Method
 		P = (self.A+ self.C)/2 #Midpoint
 		BP = Vector(self.B, P)
-		BP.normalize()
+		BP.normalize() #Makes length of BP == 1
 		BP *= self.epsilon
 		self.B_prime = self.B + BP #Move B in the direction of BP
 
-	
+		#Direct Method
+		# AB = Vector(self.A,self.B)
+		# AC = Vector(self.A,self.C)
+		# AC.normalize()
+		# scalar = AB.dot(AC)
+		# A1 = AC*scalar
+
+		# A2 = (A1 - AB)*self.epsilon
+
+		# self.B_prime = self.B + A2
+		# print(self.B_prime)
+
+
+
+
+	#Uses Barycentric Coordinate Method
+	#Uses A as origin, then uses AB and AC as a basis for any point within the triangle
+	#Alpha and Beta are the coefficients of the basis for any given point
+	#If Alpha and Beta are both greater than 0, and both sum less than 1 then a given point is within the triangle
 	def contains_point(self, P = Point(0,0,0)):
-	#Check if a point P is inside the triangle
-		A = self.A
-		B = self.B
-		C = self.C
+		# P = A + alpha * AC + beta * AB       // Original equation, Point P = Point A + coefficient*basis1 + coefficient*basis2
+		# AP = alpha*AC + beta*AB    	 		// Subtract A from both sides
 
-		#Compute vectors        
-		v0 = Vector(A,C)
-		v1 = Vector(A,B)
-		v2 = Vector(A,P)
-	
-		dot00 = v0.dot(v0)
-		dot01 = v0.dot(v1)
-		dot02 = v0.dot(v2)
-		dot11 = v1.dot(v1)
-		dot12 = v1.dot(v2)
+		# (AP) . AC = (alpha * AC + beta * AB) . AC		
+		# (AP) . AB = (alpha * AC + beta * AB) . AB 	
+		#Take the dot product with both basis vectors to generate 2 equations to solve our system	
 
-		#Compute barycentric coordinates
-		invDenom = 1 / (dot00 * dot11 - dot01 * dot01)
-		u = (dot11 * dot02 - dot01 * dot12) * invDenom
-		v = (dot00 * dot12 - dot01 * dot02) * invDenom
+		AP = Vector(self.A, P)
+		AB = Vector(self.A, self.B)
+		AC = Vector(self.A, self.C)
 
-		#Check if point is in triangle
-		return (u >= 0) and (v >= 0) and (u + v < 1)
+		# Solving for the coefficients
+		alpha = (((AB.dot(AB))*(AP.dot(AC))-(AB.dot(AC))*(AP.dot(AB)))) / (((AC.dot(AC))*(AB.dot(AB)) - (AC.dot(AB))*(AB.dot(AC))))
+		beta = (((AC.dot(AC))*(AP.dot(AB))-(AC.dot(AB))*(AP.dot(AC)))) / (((AC.dot(AC))*(AB.dot(AB)) - (AC.dot(AB))*(AB.dot(AC))))
+
+		if (alpha > 0 and beta > 0 and (alpha + beta) < 1):
+			# print("Alpha: " + str(alpha) + " Beta: " + str(beta))
+			return True
+		else:
+			return False
 
 
 	def intersected_by_line_segment(self, DE = Line()):
@@ -259,6 +294,7 @@ class Triangle:
 			return False 
 
 
+# from mayavi import points3d
 if __name__ == "__main__":
 	
 
@@ -318,53 +354,25 @@ if __name__ == "__main__":
 	# print(ABC)
 
 #Triangle Testing
+	# protein_name = input('Enter the name of the protein: ')
+	# print(protein_name)
 	A = Point(0,0,0)
-	B = Point(1,1,0)
+	B = Point(1.5,1,0)
 	C = Point(2,0,0)
 
-	D = Point(3,1,0)
-	E = Point(4,0,0)
+	# ABC = Triangle(A,B,C)
+	# print(ABC)
 
-	# Point_Array = [A,B,C,D,E]
+	# ABC.tryFlatten()
 
-	# num_triangles = 3
-	# num_flat = 0
-	# all_flat = False
-	# num_iters = 0
+	# L = Point(0.5,0,1)
+	# S = Point(2,1,-1)
 
-	# # while(all_flat == False):
-	# for z in range(5):
-	# 	for i in range(num_triangles):
+	# LS = Line(L,S)
+	# print(LS)
+	# ABC = Triangle(A,B,C)
 
-	# 		V1 = Point(i, i%2, 0)
-	# 		V2 = Point(i+1, (i+1)%2, 0)
-	# 		V3 = Point(i+2, (i+2)%2, 0)
-
-	# 		ABC = Triangle(V1, V2, V3)
-
-	# 		ABC.tryFlatten()
-	# 		ABpC = Triangle(ABC.A, ABC.B_prime, ABC.C)
-	# 		print(ABpC.distance)
-	# 		if(ABpC.isFlat()):
-	# 			num_flat += 1
-
-	# 		if(num_flat == num_triangles):
-	# 			print('All triangles are flat')
-	# 			all_flat = True
-	# 	num_iters += 1
-	# 	print("Num Iters: " + str(num_iters))
-
-
-	L = Point(0.5,0,1)
-	S = Point(2,1,-1)
-
-	LS = Line(L,S)
-	ABC = Triangle(A,B,C)
-
-	print(ABC.intersected_by_line_segment(LS))
-
-
-
+	# print(ABC.intersected_by_line_segment(LS))
 
 
 
