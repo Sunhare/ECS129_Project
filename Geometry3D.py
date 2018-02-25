@@ -1,6 +1,5 @@
 #Geometry3D.py
 from math import sqrt
-import numpy as np
 
 class Point(): 
 	#Constructor, initialized to the zero vector if no input given
@@ -47,8 +46,10 @@ class Vector:
 	#Constructor, initialized to the zero vector if no input given
 	#A = starting point, B = ending point
 	def __init__(self, A = Point(0,0,0), B = Point(0,0,0)):
-		if type(A) != Point or type(B) != Point:
-			raise TypeError('The vector was not initialized with two points')
+		# if type(A) != Point or type(B) != Point:
+			# print(type(A))
+			# print(type(B))
+			# raise TypeError('The vector was not initialized with two points')
 
 		self.x = B.x-A.x
 		self.y = B.y-A.y
@@ -164,6 +165,9 @@ class Line:
 
 
 class Triangle:
+
+	threshold = 0.01 #FIXME Choose a threshold to check if the triangle is flat
+
 	def __init__(self, A=Point(0,0,0), B=Point(0,0,0), C=Point(0,0,0)):
 		self.A = A
 		self.B = B
@@ -171,8 +175,8 @@ class Triangle:
 
 		self.plane = Plane(A, B, C) #Plane created by the triangle
 
-		self.epsilon = 0.01 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
-		self.threshold = 0.01 #FIXME Choose a threshold to check if the triangle is flat
+		# self.epsilon = 0.01 #FIXME Chooose an arbitrary epsilon to move flatten the triangle
+		
 		
 
 	def __str__(self):
@@ -198,7 +202,7 @@ class Triangle:
 
 	def isFlat(self):
 		#Check if point B is less than self.threshold away from the line segment AC
-		if self.distance <= self.threshold:
+		if self.distance <= Triangle.threshold:
 			return True
 		else:
 			return False
@@ -310,23 +314,45 @@ if __name__ == "__main__":
 #Triangle Testing
 	# protein_name = input('Enter the name of the protein: ')
 	# print(protein_name)
+	# A = Point(0,0,0)
+	# B = Point(1.5,1,0)
+	# C = Point(2,0,0)
+
+	# ABC = Triangle(A,B,C)
+	# print(ABC)
+
+	# print(ABC.isFlat())
+	# ABC.tryFlatten()
+
+	# L = Point(0.5,0,1)
+	# S = Point(2,1,-1)
+
+	# LS = Line(L,S)
+	# print(LS)
+	# ABC = Triangle(A,B,C)
+
+	# print(ABC.intersected_by_line_segment(LS))
+
 	A = Point(0,0,0)
-	B = Point(1.5,1,0)
+	B = Point(1,1,0)
 	C = Point(2,0,0)
+	D = Point(3,3,0)
+	E = Point(4,0,0)
+	F = Point(5,2,0)
+	G = Point(5,0,0)
 
-	ABC = Triangle(A,B,C)
-	print(ABC)
+	point_array = [A,B,C,D,E,F,G]
 
-	ABC.tryFlatten()
+	num_triangles = len(point_array)-2
 
-	L = Point(0.5,0,1)
-	S = Point(2,1,-1)
+	for i in range(num_triangles):
+		# print(point_array[i])
 
-	LS = Line(L,S)
-	print(LS)
-	ABC = Triangle(A,B,C)
+		ABC = Triangle(point_array[i], point_array[i+1], point_array[i+2])
+		ABC.tryFlatten()
+		print(ABC)
 
-	print(ABC.intersected_by_line_segment(LS))
+
 
 
 

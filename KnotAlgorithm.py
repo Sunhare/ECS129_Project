@@ -1,13 +1,25 @@
 #KnotAlgorithm.py
 from Geometry3D import *
 
-"""Look into MatPlotLib"""
+"""
+Look into MatPlotLib
+
+Random walk lattice protein knots (Google)
+	Knotted proteins: A tangled tale of Structural Biology
+	Knots slipknots and ephemeral knots in random walks and equilateral polygons
+
+How do you get multiple sequences by hand?
+
+"""
+
 
 
 #Open the amino acid sequences
-protein_name = input('Enter the name of the protein: ')
+protein_name = input('Enter the protein file name: ')
+user_threshold = float(input('Enter the threshold for triangle flatness: '))
 
-protein_file = open(protein_name+'_original.txt', 'r')
+protein_file = open(protein_name, 'r')
+Triangle.threshold = user_threshold
 
 #Declare an empty list to store the amino acids along with their coordinates
 AA_array = list()
@@ -30,6 +42,7 @@ N_could_have_moved = 0 #Whenever we could make a move but don't because we're bl
 #Sanity check variables
 num_iters = 0
 flat_counter = 0
+
 
 while something_to_do:
 # for index in range(1): #Debugging, Data Visualization
@@ -126,7 +139,7 @@ while something_to_do:
 	N_could_have_moved = 0
 	flat_counter = 0
 
-print("Knot Present?: " + str(knot_present))
-
+print("\nKnot Present?: " + str(knot_present))
+print("Threshold: " +str(user_threshold)+'\n')
 
 protein_file.close()
