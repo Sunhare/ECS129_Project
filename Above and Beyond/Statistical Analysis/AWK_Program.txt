@@ -1,6 +1,0 @@
-AWK Program so you don't forget
-
-awk '{if($1 == "ATOM" && $4 == "CA" && $7 == "A") print $11 "\t" $12 "\t" $13 }' 3bjx.cif > 3bjx.txt
-
-
-awk '{x = $1; split(x, a, ""); for (i = 1; i <= 4; i++) printf(a[i]); printf("\n")}' KnotDB.txt > AllKnots.txt
